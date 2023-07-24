@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>PDF2PPT</title>
+    <!-- Add your CSS stylesheets and other necessary external resources here -->
+    <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body>
+    <h1>Employee Submission Form</h1>
+
+    <form action="/submit" method="post" enctype="multipart/form-data">
+        <!-- File Upload -->
+        <label for="pdf1">PDF File 1:</label>
+        <input type="file" id="pdf1" name="pdf1">
+        <br>
+
+        <label for="pdf2">PDF File 2:</label>
+        <input type="file" id="pdf2" name="pdf2">
+        <br>
+
+        <!-- Checkboxes -->
+<label for="checkbox1">
+    <input type="checkbox" id="checkbox1" name="checkbox" value="Besluta och starta aktiviteter"> Besluta och starta aktiviteter
+</label>
+<br>
+
+<label for="checkbox2">
+    <input type="checkbox" id="checkbox2" name="checkbox" value="Leda och följa upp"> Leda och följa upp
+</label>
+<br>
+
+<label for="checkbox3">
+    <input type="checkbox" id="checkbox3" name="checkbox" value="Arbeta med människor"> Arbeta med människor
+</label>
+<br>
+
+<label for="checkbox4">
+    <input type="checkbox" id="checkbox4" name="checkbox" value="Skapa relationer och nätverk"> Skapa relationer och nätverk
+</label>
+<br>
+
+<label for="checkbox5">
+    <input type="checkbox" id="checkbox5" name="checkbox" value="Uppnå personliga arbetsmål"> Uppnå personliga arbetsmål
+</label>
+<br>
+
+
+    
+
+        <!-- Submit Button -->
+        <input type="submit" value="Submit">
+    </form>
+
+    <div>
+        {% if output %}
+        <h3>Succesfully modified the presentation! Download Below</h3>
+        <a href="/download" class="download-button">Download Modified Presentation</a>
+        {% endif %}
+    
+        {% if error_message %}
+        <h3 class="error_message">{{ error_message }}</h3>
+        {% endif %}
+    </div>
+    
+    
+    
+
+    <!-- Add your JavaScript code or other HTML elements as needed -->
+
+    <!-- Add your JavaScript files and other necessary external resources here -->
+
+</body>
+</html>
