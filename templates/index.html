@@ -6,15 +6,15 @@
     <link rel="stylesheet" href="/static/css/styles.css">
 </head>
 <body>
-    <h1>Employee Submission Form</h1>
+    <h1>PDF2PPT</h1>
 
     <form action="/submit" method="post" enctype="multipart/form-data">
         <!-- File Upload -->
-        <label for="pdf1">PDF File 1:</label>
+        <label for="pdf1">Upload OPQ File:</label>
         <input type="file" id="pdf1" name="pdf1">
         <br>
 
-        <label for="pdf2">PDF File 2:</label>
+        <label for="pdf2">Upload Verify File:</label>
         <input type="file" id="pdf2" name="pdf2">
         <br>
 
@@ -45,10 +45,38 @@
 <br>
 
 
-    
+<label for="checkbox6">
+    <input type="checkbox" id="checkbox6" name="checkbox" value="Övertala och påverka"> Övertala och påverka
+</label>
+<br>
+
+<label for="checkbox7">
+    <input type="checkbox" id="checkbox7" name="checkbox" value="Skriva och rapportera"> Skriva och rapportera
+</label>
+<br>
+
+<label for="checkbox8">
+    <input type="checkbox" id="checkbox8" name="checkbox" value="Tillämpa expertis och teknologi"> Tillämpa expertis och teknologi
+</label>
+<br>
+
+<label for="checkbox9">
+    <input type="checkbox" id="checkbox9" name="checkbox" value="Analysera"> Analysera
+</label>
+<br>
+
+<label for="checkbox10">
+    <input type="checkbox" id="checkbox10" name="checkbox" value="Lära och utforska"> Lära och utforska
+</label>
+<br>
+
+
+
+    <div class="submit_div">
+        <input type="submit" value="Submit">
+    </div>
 
         <!-- Submit Button -->
-        <input type="submit" value="Submit">
     </form>
 
     <div>

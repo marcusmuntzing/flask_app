@@ -22,17 +22,17 @@ def submit():
     if "pdf1" in request.files and "pdf2" in request.files:
         pdf1 = request.files["pdf1"]
         pdf2 = request.files["pdf2"]
+
+        print(request.form.getlist("checkbox"))
         
-        for key, value in request.form.items():
-            if key == "checkbox" and value:
-                checkbox_count += 1
-                checkbox_names.append(value)
+        for value in request.form.getlist("checkbox"):
+            checkbox_count += len(request.form.getlist("checkbox"))
+            checkbox_names.append(value)
 
         if checkbox_count >= 1:
             modified_presentation_path = pdf2ppt.run(pdf1, pdf2, checkbox_names)
             return render_template("index.html", output=modified_presentation_path)
         
-    print(checkbox_names)
 
     error_message = "Please select PDF files and check at least 5 checkboxes."
     return render_template("index.html", error_message=error_message)

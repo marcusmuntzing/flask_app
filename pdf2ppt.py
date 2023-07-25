@@ -37,6 +37,8 @@ def extract_all_verify(verify_file):
 
 	return text
 
+
+
 def string_to_list_opq(opq_file):
 	list_of_words = ['DeDN', 'Spacer', '1', '2.', '3.', '4.', '5.', '6.', '7.', '8.', '2.2', '3.1', '3.2', '3.3', '4.1',
 	                 '4.2', '4.3', '5.1', '5.2', '5.3', '6.1', '6.2', '6.3', '7.1', '7.2', '8.1', '8.2', '\uf0fc\uf0fc',
@@ -108,6 +110,7 @@ def get_dimmension(index, number, opq_file):
 		a = full_list[n].split(" ", 1)
 		chosen_list.append(a)
 
+
 	return chosen_list
 
 def get_chosen_dimmension_list(opq_file, checkbox_list):
@@ -133,6 +136,7 @@ def get_chosen_dimmension_list(opq_file, checkbox_list):
 	return string_list, index_list
 
 def make_slide_8_to_12(presentation, opq_file, checkbox_list):
+	
 	slide_index = 7
 	dimmension_list, index_list = get_chosen_dimmension_list(opq_file, checkbox_list)
 	only_dimension_list = checkbox_list
@@ -226,10 +230,11 @@ def make_slide_8_to_12(presentation, opq_file, checkbox_list):
 								run_second_column.font.color.rgb = RGBColor(0, 0, 0)
 		slide_index = 8 + i
 	
-	presentation.save()
+	presentation.save("modified_presentation.pptx")
 
 def make_slide_4_and_7_OPQ(presentation, slide_index, font_size, checkbox_list):
-
+	
+	
 	if slide_index < len(presentation.slides):
 		slide = presentation.slides[slide_index]
 
@@ -273,72 +278,243 @@ def make_slide_4_and_7_OPQ(presentation, slide_index, font_size, checkbox_list):
 								run.font.bold = False
 
 	# Save the modified presentation
-	presentation.save()
+	presentation.save("modified_presentation.pptx")
 
-def make_slide_4_and_7_verify(presentation, slide_index, font_size, verify_file):
-    
 
-    if slide_index < len(presentation.slides):
-        slide = presentation.slides[slide_index]
-        target_table_cells = [
-            ["Test"],
-            ["Test"],
-            ["Test"],
-            ["Test"],
-            ["Test"],
-        ]
-        percent_list, text_list, name = string_to_list_verify(verify_file)
+def make_slide_4_verify(presentation, verify_file):
+	slide_index = 3
+	percent_list, text_list, name = string_to_list_verify(verify_file)
 
-        for shape in slide.shapes:
-            if shape.has_table:
-                table = shape.table
+	if slide_index < len(presentation.slides):
+		slide = presentation.slides[slide_index]
 
-                if len(table.rows) >= len(target_table_cells) and len(table.columns) > 1:
-                    found_table = True
+		# Method: Find the table based on cell values
+		target_table_cells = [
+			["G"],
+			["I"],
+			["N"],
+			["D"],
+		]
 
-                    # Check if the cell values match the target_table_cells
-                    for row_index, row_cells in enumerate(target_table_cells):
-                        for col_index, cell_value in enumerate(row_cells):
-                            if (
-                                row_index < len(table.rows) and
-                                col_index < len(table.columns)
-                            ):
-                                cell = table.cell(row_index, col_index)
-                                if cell.text != cell_value:
-                                    found_table = False
-                                    break
-                            else:
-                                found_table = False
-                                break
+		new_texts = percent_list
+		color = RGBColor(0, 0, 0)  # Specify your own RGB color values
 
-                    if found_table:
-                        # Update the table with new texts
-                        for i in range(len(text_list)):
-                            if i < len(table.rows) and i < len(text_list):
-                                cell = table.cell(i, 0)
-                                if cell.text:
-                                    text_frame = cell.text_frame
-                                    paragraph = text_frame.paragraphs[0]
-                                    run = paragraph.runs[0]
+		for shape in slide.shapes:
+			if shape.has_table:
+				table = shape.table
 
-                                    run.text = text_list[i]
-                                    run.font.size = Pt(font_size)
-                                    run.font.bold = False
+				# Check if the table has the desired number of rows and columns
+				if len(table.rows) >= len(target_table_cells) and len(table.columns) >= 2:
+					found_table = True
 
-                        # Update the table with the name
-                        if len(table.columns) > 1 and len(table.rows) > 5:
-                            cell = table.cell(5, 1)
-                            if cell.text:
-                                text_frame = cell.text_frame
-                                paragraph = text_frame.paragraphs[0]
-                                run = paragraph.runs[0]
+					# Check if the cell values match the target_table_cells
+					for row_index, row_cells in enumerate(target_table_cells):
+						for col_index, cell_value in enumerate(row_cells):
+							cell = table.cell(row_index, col_index + 1)
+							if cell.text != cell_value:
+								found_table = False
+								break
 
-                                run.text = name
-                                run.font.size = Pt(font_size)
-                                run.font.bold = False
+						if not found_table:
+							break
 
-    # Save the modified presentation
-    presentation.save()
+					if found_table:
+						# Modify the content of the matched table
+						for row_index, row_cells in enumerate(target_table_cells):
+							col_index = 1  # Change the column index to 1 (second column)
+							cell = table.cell(row_index, col_index)
+
+							if cell.text_frame.paragraphs:
+								# Access the existing text frame and paragraph in the cell
+								text_frame = cell.text_frame
+								paragraph = text_frame.paragraphs[0]
+
+								# Clear existing content if needed
+								paragraph.clear()
+
+								# Create a new run and set the properties
+								run = paragraph.add_run()
+								run.text = new_texts[row_index]  # Replace with the new text from the list
+
+								# Copy the formatting from the first column's text run
+								source_cell = table.cell(row_index, 0)
+								if source_cell.text_frame.paragraphs:
+									source_paragraph = source_cell.text_frame.paragraphs[0]
+									source_run = source_paragraph.runs[0]
+
+									# Set the font properties of the second column based on the first column
+									run.font.name = source_run.font.name
+									run.font.size = source_run.font.size
+									run.font.bold = source_run.font.bold
+									run.font.italic = source_run.font.italic
+									run.font.underline = source_run.font.underline
+
+									# Set the color of the second column
+									run.font.color.rgb = color
+
+						break
+
+
+
+	modified_presentation_path = "modified_presentation.pptx"
+	presentation.save(modified_presentation_path)
+
+
+
+def make_slide_16(presentation, verify_file):
+	slide_index = 15
+	percent_list, text_list, name = string_to_list_verify(verify_file)
+
+	if slide_index < len(presentation.slides):
+		slide = presentation.slides[slide_index]
+
+		# Method: Find the table based on cell values
+		target_table_cells = [
+			["G"],
+			["I"],
+			["N"],
+			["D"],
+		]
+
+		new_texts = percent_list
+
+		for shape in slide.shapes:
+			if shape.has_table:
+				table = shape.table
+
+				# Check if the table has the desired number of rows and columns
+				if len(table.rows) >= len(target_table_cells) and len(table.columns) >= 2:
+					found_table = True
+
+					# Check if the cell values match the target_table_cells
+					for row_index, row_cells in enumerate(target_table_cells):
+						for col_index, cell_value in enumerate(row_cells):
+							cell = table.cell(row_index, col_index + 1)
+							if cell.text != cell_value:
+								found_table = False
+								break
+
+						if not found_table:
+							break
+
+					if found_table:
+						# Modify the content of the matched table
+						for row_index, row_cells in enumerate(target_table_cells):
+							col_index = 1  # Change the column index to 1 (second column)
+							cell = table.cell(row_index, col_index)
+							text_frame = cell.text_frame
+
+							if text_frame.paragraphs:
+								# Access the first paragraph in the text frame
+								paragraph = text_frame.paragraphs[0]
+
+								# Store the existing font properties
+								font_name = paragraph.runs[0].font.name
+
+								# Clear existing content if needed
+								paragraph.clear()
+
+								# Create a new run and set the properties
+								run = paragraph.add_run()
+								run.text = new_texts[row_index]  # Replace with the new text from the list
+								run.font.name = font_name
+								run.font.size = Pt(20)
+								run.font.color.rgb = RGBColor(0, 0, 0)
+								run.font.bold = False
+
+						break
+
+	modified_presentation_path = "modified_presentation.pptx"
+	presentation.save(modified_presentation_path)
+
+
+
+
+def make_slide_17(presentation, inputs, ability, verify_file):
+	percent_list, text_list, name = string_to_list_verify(verify_file)
+	slide_index = 16
+	i = inputs
+
+	if slide_index < len(presentation.slides):
+		slide = presentation.slides[slide_index]
+
+		# Method: Find the table based on cell values
+		target_table_cells = [
+			[ability],
+			["Test"],
+		]
+		new_texts = text_list[i]
+		percents = percent_list[i+1]
+
+		for shape in slide.shapes:
+			if shape.has_table:
+				table = shape.table
+
+				# Check if the table has the desired number of rows and columns
+				if len(table.rows) >= len(target_table_cells) and len(table.columns) >= 1:
+					found_table = True
+
+					# Check if the cell values match the target_table_cells
+					for row_index, row_cells in enumerate(target_table_cells):
+						for col_index, cell_value in enumerate(row_cells):
+							cell = table.cell(row_index, col_index)
+							if cell.text != cell_value:
+								found_table = False
+								break
+
+						if not found_table:
+							break
+
+					if found_table:
+						# Modify the content of the matched table
+
+						cell = table.cell(1, 0)
+						text_frame = cell.text_frame
+
+						if text_frame.paragraphs:
+							# Access the first paragraph in the text frame
+							paragraph = text_frame.paragraphs[0]
+
+							# Store the existing font properties
+							font_name = paragraph.runs[0].font.name
+
+							# Clear existing content if needed
+							paragraph.clear()
+
+							# Create a new run and set the properties
+							run = paragraph.add_run()
+							run.text = new_texts  # Replace with the new text from the list
+							run.font.name = font_name
+							run.font.size = Pt(10)
+							run.font.color.rgb = RGBColor(0, 0, 0)
+							run.font.bold = False
+
+						cell = table.cell(0, 1)
+						text_frame = cell.text_frame
+
+						if text_frame.paragraphs:
+							# Access the first paragraph in the text frame
+							paragraph = text_frame.paragraphs[0]
+
+							# Store the existing font properties
+							font_name = paragraph.runs[0].font.name
+
+							# Clear existing content if needed
+							paragraph.clear()
+
+							# Create a new run and set the properties
+							run = paragraph.add_run()
+							run.text = percents  # Replace with the new text from the list
+							run.font.name = font_name
+							run.font.size = Pt(17)
+							run.font.color.rgb = RGBColor(0, 0, 0)
+
+
+						break
+
+	# Save the modified presentation to a new file
+	modified_presentation_path = "modified_presentation.pptx"
+	presentation.save(modified_presentation_path)
 
 
 
@@ -347,15 +523,16 @@ def run(opq_file, verify_file, checkbox_list):
     presentation = Presentation("Fördjupad bedömning - mall.pptx")
 
     # Make modifications to the presentation
+    make_slide_4_and_7_OPQ(presentation, 3, 8, checkbox_list)
+    make_slide_4_and_7_OPQ(presentation, 6, 11, checkbox_list)
     make_slide_8_to_12(presentation, opq_file, checkbox_list)
-    make_slide_4_and_7_OPQ(presentation, 3, 24, checkbox_list)
-    make_slide_4_and_7_verify(presentation, 6, 24, verify_file)
+    make_slide_4_verify(presentation, verify_file)
+    make_slide_17(presentation, 0, "Induktiv förmåga", verify_file)
+    make_slide_17(presentation, 1, "Numerisk förmåga", verify_file)
+    make_slide_17(presentation, 2, "Deduktiv förmåga", verify_file)
+    make_slide_16(presentation, verify_file)
+
 
     # Save the modified presentation
-    presentation.save(modified_presentation_path)
 
     return modified_presentation_path
-
-
-	
-    
